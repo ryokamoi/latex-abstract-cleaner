@@ -11,6 +11,67 @@ const cleanupOptions = [
   { key: "trim", label: "Trim leading/trailing whitespace", enabled: true }
 ];
 
+const CUSTOM_REPLACEMENTS_COOKIE = "latex_cleaner_custom_replacements";
+const CUSTOM_REPLACEMENTS_COOKIE_DAYS = 365;
+
+function setCookie(name, value, days) {
+  const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+}
+
+function getCookie(name) {
+  const encodedName = `${name}=`;
+  const parts = document.cookie.split(";");
+
+  for (const part of parts) {
+    const cookie = part.trim();
+    if (cookie.startsWith(encodedName)) {
+      return decodeURIComponent(cookie.slice(encodedName.length));
+    }
+  }
+
+  return "";
+}
+
+function saveCustomReplacementsToCookie() {
+  const rows = document.querySelectorAll(".replacement-row");
+  const replacements = [];
+
+  rows.forEach((row) => {
+    const from = row.querySelector(".replace-from").value;
+    const to = row.querySelector(".replace-to").value;
+    if (from !== "" || to !== "") {
+      replacements.push({ from, to });
+    }
+  });
+
+  setCookie(CUSTOM_REPLACEMENTS_COOKIE, JSON.stringify(replacements), CUSTOM_REPLACEMENTS_COOKIE_DAYS);
+}
+
+function loadCustomReplacementsFromCookie() {
+  const raw = getCookie(CUSTOM_REPLACEMENTS_COOKIE);
+  if (!raw) {
+    return false;
+  }
+
+  try {
+    const replacements = JSON.parse(raw);
+    if (!Array.isArray(replacements)) {
+      return false;
+    }
+
+    replacements.forEach((item) => {
+      const from = item && typeof item.from === "string" ? item.from : "";
+      const to = item && typeof item.to === "string" ? item.to : "";
+      addReplacementRow(from, to);
+    });
+
+    return replacements.length > 0;
+  } catch (error) {
+    return false;
+  }
+}
+
 function isOptionEnabled(key) {
   const option = cleanupOptions.find((item) => item.key === key);
   return option ? option.enabled : false;
@@ -57,12 +118,18 @@ function addReplacementRow(from = "", to = "") {
   fromInput.className = "replace-from";
   fromInput.placeholder = "e.g. --";
   fromInput.value = from;
+  fromInput.addEventListener("input", () => {
+    saveCustomReplacementsToCookie();
+  });
 
   const toInput = document.createElement("input");
   toInput.type = "text";
   toInput.className = "replace-to";
   toInput.placeholder = "e.g. -";
   toInput.value = to;
+  toInput.addEventListener("input", () => {
+    saveCustomReplacementsToCookie();
+  });
 
   const removeButton = document.createElement("button");
   removeButton.type = "button";
@@ -73,6 +140,7 @@ function addReplacementRow(from = "", to = "") {
     event.preventDefault();
     event.stopPropagation();
     row.remove();
+    saveCustomReplacementsToCookie();
   });
 
   row.appendChild(fromInput);
@@ -207,6 +275,7 @@ async function copyOutput() {
 
 document.getElementById("addRuleButton").addEventListener("click", () => {
   addReplacementRow();
+  saveCustomReplacementsToCookie();
 });
 
 document.getElementById("cleanButton").addEventListener("click", () => {
@@ -241,4 +310,6 @@ document.getElementById("toggleCleanupOptionsButton").addEventListener("click", 
 
 renderCleanupOptions();
 setCleanupOptionsVisible(false);
-addReplacementRow("\\latex", "LaTeX");
+if (!loadCustomReplacementsFromCookie()) {
+  addReplacementRow("\\latex", "LaTeX");
+}
