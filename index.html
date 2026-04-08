@@ -2,33 +2,278 @@
 <html>
 <head>
   <title>LaTeX Abstract Cleaner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f5f3ee;
+      --surface: #fffaf0;
+      --surface-strong: #ffffff;
+      --ink: #21201d;
+      --muted: #666054;
+      --line: #d8d0be;
+      --accent: #1f6a5f;
+      --accent-ink: #ffffff;
+      --danger: #8f3b2e;
+      --shadow: 0 14px 35px rgba(33, 32, 29, 0.08);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 100% -20%, #efe7d3 0%, transparent 45%),
+        radial-gradient(circle at -10% 120%, #d9e9e4 0%, transparent 42%),
+        var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 30px 16px;
+    }
+
+    .app {
+      max-width: 980px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(1.6rem, 2.7vw, 2.2rem);
+      letter-spacing: 0.01em;
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 0.97rem;
+    }
+
+    .section {
+      margin-bottom: 18px;
+    }
+
+    .section h2 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+      letter-spacing: 0.01em;
+    }
+
+    .helper {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    textarea,
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface-strong);
+      color: var(--ink);
+      font: inherit;
+      padding: 11px 12px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 140px;
+      line-height: 1.5;
+    }
+
+    textarea#output {
+      min-height: 160px;
+    }
+
+    textarea:focus,
+    input:focus,
+    button:focus {
+      outline: 2px solid rgba(31, 106, 95, 0.25);
+      outline-offset: 1px;
+      border-color: var(--accent);
+    }
+
+    .replacement-panel {
+      background: #f8f5ec;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .replacement-head {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .replacement-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font: inherit;
+      transition: transform 100ms ease, box-shadow 140ms ease, background 140ms ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-ink);
+      box-shadow: 0 6px 18px rgba(31, 106, 95, 0.25);
+    }
+
+    .btn-secondary {
+      background: #ece7da;
+      color: var(--ink);
+      border-color: #d8cfbb;
+    }
+
+    .btn-danger {
+      background: #fff4f1;
+      color: var(--danger);
+      border-color: #edc7bf;
+      padding: 9px 10px;
+      min-width: 38px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 720px) {
+      .app {
+        padding: 18px;
+      }
+
+      .replacement-head {
+        display: none;
+      }
+
+      .replacement-row {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-danger {
+        width: fit-content;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h2>LaTeX Abstract Cleaner</h2>
+  <main class="app">
+    <h1>LaTeX Abstract Cleaner</h1>
+    <p class="subtitle">Clean noisy abstract text and manage custom replacements with simple editable rules.</p>
 
-  <textarea id="input" rows="10" cols="80" placeholder="Paste abstract here"></textarea>
-  <br><br>
+    <section class="section">
+      <h2>Input</h2>
+      <textarea id="input" placeholder="Paste abstract here"></textarea>
+    </section>
 
-  <textarea id="replaceList" rows="5" cols="80" placeholder="replace_from,replace_to"></textarea>
-  <br><br>
+    <section class="section">
+      <h2>Custom Replacements</h2>
+      <p class="helper">Rules are applied top to bottom. Leave "Find" empty to skip a row.</p>
+      <div class="replacement-panel">
+        <div class="replacement-head">
+          <span>Find</span>
+          <span>Replace With</span>
+          <span>Remove</span>
+        </div>
+        <div id="replacementsContainer"></div>
+        <div class="toolbar">
+          <button class="btn btn-secondary" id="addRuleButton" type="button">+ Add Rule</button>
+        </div>
+      </div>
+    </section>
 
-  <button onclick="cleanUp()">Clean Up</button>
+    <section class="section">
+      <div class="toolbar">
+        <button class="btn btn-primary" onclick="cleanUp()" type="button">Clean Up</button>
+      </div>
+    </section>
 
-  <h3>Output</h3>
-  <textarea id="output" rows="10" cols="80"></textarea>
+    <section class="section">
+      <h2>Output</h2>
+      <textarea id="output"></textarea>
+    </section>
+  </main>
 
   <script>
-    function parseCSV(text) {
-      return text.split("\n")
-        .map(row => row.split(","))
-        .filter(row => row.length === 2);
+    function addReplacementRow(from = "", to = "") {
+      const container = document.getElementById("replacementsContainer");
+      const row = document.createElement("div");
+      row.className = "replacement-row";
+
+      const fromInput = document.createElement("input");
+      fromInput.type = "text";
+      fromInput.className = "replace-from";
+      fromInput.placeholder = "e.g. --";
+      fromInput.value = from;
+
+      const toInput = document.createElement("input");
+      toInput.type = "text";
+      toInput.className = "replace-to";
+      toInput.placeholder = "e.g. -";
+      toInput.value = to;
+
+      const removeButton = document.createElement("button");
+      removeButton.type = "button";
+      removeButton.className = "btn btn-danger";
+      removeButton.textContent = "x";
+      removeButton.setAttribute("aria-label", "Remove replacement rule");
+      removeButton.addEventListener("click", () => row.remove());
+
+      row.appendChild(fromInput);
+      row.appendChild(toInput);
+      row.appendChild(removeButton);
+      container.appendChild(row);
+    }
+
+    function getReplacementRules() {
+      const rows = document.querySelectorAll(".replacement-row");
+      const rules = [];
+
+      rows.forEach((row) => {
+        const from = row.querySelector(".replace-from").value;
+        const to = row.querySelector(".replace-to").value;
+        if (from !== "") {
+          rules.push([from, to]);
+        }
+      });
+
+      return rules;
     }
 
     function cleanUp() {
       let abstract = document.getElementById("input").value;
-      let replaceListText = document.getElementById("replaceList").value;
-
-      let replace_list = parseCSV(replaceListText);
+      let replace_list = getReplacementRules();
       replace_list.push(["---", "&mdash;"]);
 
       // replacements
@@ -59,6 +304,14 @@
 
       document.getElementById("output").value = abstract.trim();
     }
+
+    document.getElementById("addRuleButton").addEventListener("click", () => {
+      addReplacementRow();
+    });
+
+    addReplacementRow("\\alpha", "alpha");
+    addReplacementRow("\\beta", "beta");
+    addReplacementRow("\\gamma", "gamma");
   </script>
 </body>
 </html>
