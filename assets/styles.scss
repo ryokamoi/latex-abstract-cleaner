@@ -76,7 +76,8 @@ input {
 }
 
 textarea {
-  resize: vertical;
+  resize: none;
+  overflow-y: hidden;
   min-height: 140px;
   line-height: 1.5;
 }
@@ -158,6 +159,25 @@ button:focus {
   gap: 10px;
   margin-top: 4px;
   margin-bottom: 20px;
+}
+
+.output-toolbar {
+  margin-bottom: 8px;
+}
+
+.copy-status {
+  align-self: center;
+  color: $muted;
+  font-size: 0.9rem;
+  min-height: 1em;
+
+  &.is-success {
+    color: $accent;
+  }
+
+  &.is-error {
+    color: $danger;
+  }
 }
 
 @media (max-width: 720px) {

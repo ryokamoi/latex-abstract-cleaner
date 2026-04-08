@@ -49,6 +49,7 @@ function getReplacementRules() {
 
 function cleanUp() {
   let abstract = document.getElementById("input").value;
+  const outputEl = document.getElementById("output");
   const replaceList = getReplacementRules();
   replaceList.push(["---", "&mdash;"]);
 
@@ -64,7 +65,66 @@ function cleanUp() {
   abstract = abstract.replace(/\n/g, " ");
   abstract = abstract.replace(/\s+/g, " ");
 
-  document.getElementById("output").value = abstract.trim();
+  outputEl.value = abstract.trim();
+  autoResizeTextarea(outputEl);
+}
+
+function autoResizeTextarea(textarea) {
+  const minHeight = parseFloat(window.getComputedStyle(textarea).minHeight) || 0;
+  textarea.style.height = "auto";
+  textarea.style.height = `${Math.max(textarea.scrollHeight, minHeight)}px`;
+}
+
+let copyStatusTimeoutId;
+
+function setCopyStatus(message, kind) {
+  const copyStatusEl = document.getElementById("copyStatus");
+  copyStatusEl.textContent = message;
+  copyStatusEl.classList.remove("is-success", "is-error");
+  if (kind) {
+    copyStatusEl.classList.add(kind);
+  }
+
+  if (copyStatusTimeoutId) {
+    clearTimeout(copyStatusTimeoutId);
+  }
+
+  copyStatusTimeoutId = setTimeout(() => {
+    copyStatusEl.textContent = "";
+    copyStatusEl.classList.remove("is-success", "is-error");
+  }, 1800);
+}
+
+async function copyOutput() {
+  const outputEl = document.getElementById("output");
+  const text = outputEl.value;
+
+  if (!text.trim()) {
+    setCopyStatus("Output is empty.", "is-error");
+    return;
+  }
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      setCopyStatus("Copied.", "is-success");
+      return;
+    }
+
+    outputEl.focus();
+    outputEl.select();
+    const copied = document.execCommand("copy");
+    outputEl.setSelectionRange(outputEl.value.length, outputEl.value.length);
+
+    if (copied) {
+      setCopyStatus("Copied.", "is-success");
+      return;
+    }
+  } catch (error) {
+    // Fall through to final error message.
+  }
+
+  setCopyStatus("Copy failed.", "is-error");
 }
 
 document.getElementById("addRuleButton").addEventListener("click", () => {
@@ -73,6 +133,16 @@ document.getElementById("addRuleButton").addEventListener("click", () => {
 
 document.getElementById("cleanButton").addEventListener("click", () => {
   cleanUp();
+});
+
+document.getElementById("copyButton").addEventListener("click", () => {
+  copyOutput();
+});
+
+["input", "output"].forEach((id) => {
+  const textarea = document.getElementById(id);
+  textarea.addEventListener("input", () => autoResizeTextarea(textarea));
+  autoResizeTextarea(textarea);
 });
 
 addReplacementRow("\\alpha", "alpha");
