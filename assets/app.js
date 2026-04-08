@@ -1,14 +1,14 @@
 const cleanupOptions = [
-  { key: "customRules", label: "Apply custom replacement rules", enabled: true },
-  { key: "emdash", label: "Replace --- with &mdash;", enabled: true },
-  { key: "comments", label: "Remove comments (% ...)", enabled: true },
-  { key: "latexCommands", label: "Remove LaTeX commands except \\url{}", enabled: true },
-  { key: "unwrapUrl", label: "Unwrap \\url{text} to text", enabled: true },
-  { key: "tildeSpace", label: "Replace ~ with space", enabled: true },
-  { key: "emptyBraces", label: "Remove {}", enabled: true },
-  { key: "lineBreaks", label: "Replace line breaks with space", enabled: true },
-  { key: "doubleSpaces", label: "Collapse multiple spaces", enabled: true },
-  { key: "trim", label: "Trim start/end spaces", enabled: true }
+  { key: "customRules", label: "Apply custom Find -> Replace rules", enabled: true },
+  { key: "emdash", label: "Convert --- to &mdash;", enabled: true },
+  { key: "comments", label: "Remove LaTeX comments (from % to line end)", enabled: true },
+  { key: "latexCommands", label: "Remove LaTeX commands except \\url{...}", enabled: true },
+  { key: "unwrapUrl", label: "Convert \\url{text} to plain text", enabled: true },
+  { key: "tildeSpace", label: "Convert ~ to normal spaces", enabled: true },
+  { key: "emptyBraces", label: "Remove empty braces {}", enabled: true },
+  { key: "lineBreaks", label: "Convert line breaks to spaces", enabled: true },
+  { key: "doubleSpaces", label: "Collapse repeated whitespace", enabled: true },
+  { key: "trim", label: "Trim leading/trailing whitespace", enabled: true }
 ];
 
 function isOptionEnabled(key) {
@@ -217,6 +217,22 @@ document.getElementById("copyButton").addEventListener("click", () => {
   copyOutput();
 });
 
+function setCleanupOptionsVisible(visible) {
+  const panel = document.getElementById("cleanupOptionsPanel");
+  const helper = document.getElementById("cleanupOptionsHelper");
+  const toggleButton = document.getElementById("toggleCleanupOptionsButton");
+
+  panel.classList.toggle("is-hidden", !visible);
+  helper.classList.toggle("is-hidden", !visible);
+  toggleButton.textContent = visible ? "Hide Detailed Controls" : "Show Detailed Controls";
+  toggleButton.setAttribute("aria-expanded", visible ? "true" : "false");
+}
+
+document.getElementById("toggleCleanupOptionsButton").addEventListener("click", () => {
+  const isOpen = !document.getElementById("cleanupOptionsPanel").classList.contains("is-hidden");
+  setCleanupOptionsVisible(!isOpen);
+});
+
 ["input", "output"].forEach((id) => {
   const textarea = document.getElementById(id);
   textarea.addEventListener("input", () => autoResizeTextarea(textarea));
@@ -224,6 +240,7 @@ document.getElementById("copyButton").addEventListener("click", () => {
 });
 
 renderCleanupOptions();
+setCleanupOptionsVisible(false);
 addReplacementRow("\\alpha", "alpha");
 addReplacementRow("\\beta", "beta");
 addReplacementRow("\\gamma", "gamma");
