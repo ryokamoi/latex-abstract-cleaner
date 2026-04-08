@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LaTeX Abstract Cleaner</title>
+</head>
+<body>
+  <h2>LaTeX Abstract Cleaner</h2>
+
+  <textarea id="input" rows="10" cols="80" placeholder="Paste abstract here"></textarea>
+  <br><br>
+
+  <textarea id="replaceList" rows="5" cols="80" placeholder="replace_from,replace_to"></textarea>
+  <br><br>
+
+  <button onclick="cleanUp()">Clean Up</button>
+
+  <h3>Output</h3>
+  <textarea id="output" rows="10" cols="80"></textarea>
+
+  <script>
+    function parseCSV(text) {
+      return text.split("\n")
+        .map(row => row.split(","))
+        .filter(row => row.length === 2);
+    }
+
+    function cleanUp() {
+      let abstract = document.getElementById("input").value;
+      let replaceListText = document.getElementById("replaceList").value;
+
+      let replace_list = parseCSV(replaceListText);
+      replace_list.push(["---", "&mdash;"]);
+
+      // replacements
+      replace_list.forEach(([from, to]) => {
+        abstract = abstract.split(from).join(to);
+      });
+
+      // remove comments
+      abstract = abstract.replace(/%.*$/gm, "");
+
+      // remove \function{} except url
+      abstract = abstract.replace(/\\(?!url\b)\w+\{.*?\}/g, "");
+
+      // \url{text} -> text
+      abstract = abstract.replace(/\\url\{(.+?)\}/g, "$1");
+
+      // replace ~ with space
+      abstract = abstract.replace(/~/g, " ");
+
+      // remove {}
+      abstract = abstract.replace(/\{\}/g, "");
+
+      // remove line breaks
+      abstract = abstract.replace(/\n/g, " ");
+
+      // remove double spaces
+      abstract = abstract.replace(/\s+/g, " ");
+
+      document.getElementById("output").value = abstract.trim();
+    }
+  </script>
+</body>
+</html>
