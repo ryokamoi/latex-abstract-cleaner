@@ -248,7 +248,11 @@
       removeButton.className = "btn btn-danger";
       removeButton.textContent = "x";
       removeButton.setAttribute("aria-label", "Remove replacement rule");
-      removeButton.addEventListener("click", () => row.remove());
+      removeButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        row.remove();
+      });
 
       row.appendChild(fromInput);
       row.appendChild(toInput);
