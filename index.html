@@ -8,12 +8,16 @@
 <body>
   <main class="app">
     <h1>LaTeX Abstract Cleaner</h1>
-    <p class="subtitle">Clean noisy abstract text and manage custom replacements with simple editable rules.</p>
+    <p class="subtitle">LaTeX Abstract Cleaner converts LaTeX-formatted abstracts into clean, plain text by stripping commands and formatting, making it quick and easy to reuse abstracts for arXiv or OpenReview.</p>
 
     <section class="work-box input-work-box">
       <section class="section">
         <h2>Input</h2>
-        <textarea id="input" placeholder="Paste abstract here"></textarea>
+        <textarea id="input" placeholder="Paste abstract here">This is an example abstract. \latex{} is great!
+% This is a comment. Remove it later.
+\todo{Todo should also be removed.}
+Do you    want to   remove   extra  spaces?
+You can access Overleaf here: \url{https://www.overleaf.com/}.</textarea>
       </section>
 
       <section class="section">
@@ -67,7 +71,15 @@
         <textarea id="output"></textarea>
       </section>
     </section>
+
   </main>
+
+  <footer class="site-footer">
+    <p>
+      This website is fully created by GitHub Copilot. I welcome contributions at
+      <a href="https://github.com/ryokamoi/latex_abstract_cleaner" target="_blank" rel="noopener noreferrer">https://github.com/ryokamoi/latex_abstract_cleaner</a>.
+    </p>
+  </footer>
 
   <script src="assets/app.js"></script>
 </body>
