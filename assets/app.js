@@ -11,7 +11,12 @@ const cleanupOptions = [
   { key: "trim", label: "Trim leading/trailing whitespace", enabled: true }
 ];
 
+const cleanupOptionDefaults = Object.fromEntries(
+  cleanupOptions.map((option) => [option.key, option.enabled])
+);
+
 const CUSTOM_REPLACEMENTS_COOKIE = "latex_cleaner_custom_replacements";
+const CLEANUP_OPTIONS_COOKIE = "latex_cleaner_cleanup_options";
 const CUSTOM_REPLACEMENTS_COOKIE_DAYS = 365;
 
 function setCookie(name, value, days) {
@@ -72,9 +77,50 @@ function loadCustomReplacementsFromCookie() {
   }
 }
 
+function saveCleanupOptionsToCookie() {
+  const optionStates = Object.fromEntries(
+    cleanupOptions.map((option) => [option.key, option.enabled])
+  );
+
+  setCookie(CLEANUP_OPTIONS_COOKIE, JSON.stringify(optionStates), CUSTOM_REPLACEMENTS_COOKIE_DAYS);
+}
+
+function loadCleanupOptionsFromCookie() {
+  const raw = getCookie(CLEANUP_OPTIONS_COOKIE);
+  if (!raw) {
+    return;
+  }
+
+  try {
+    const optionStates = JSON.parse(raw);
+    if (!optionStates || typeof optionStates !== "object" || Array.isArray(optionStates)) {
+      return;
+    }
+
+    cleanupOptions.forEach((option) => {
+      if (typeof optionStates[option.key] === "boolean") {
+        option.enabled = optionStates[option.key];
+      }
+    });
+  } catch (error) {
+    // Ignore malformed cookie and keep defaults.
+  }
+}
+
 function isOptionEnabled(key) {
   const option = cleanupOptions.find((item) => item.key === key);
   return option ? option.enabled : false;
+}
+
+function hasCustomCleanupOptionState() {
+  return cleanupOptions.some((option) => option.enabled !== cleanupOptionDefaults[option.key]);
+}
+
+function updateCleanupOptionsStatus() {
+  const status = document.getElementById("cleanupOptionsStatus");
+  const hasCustomState = hasCustomCleanupOptionState();
+
+  status.classList.toggle("is-visible", hasCustomState);
 }
 
 function renderCleanupOptions() {
@@ -100,6 +146,8 @@ function renderCleanupOptions() {
     toggleButton.addEventListener("click", () => {
       option.enabled = !option.enabled;
       renderCleanupOptions();
+      updateCleanupOptionsStatus();
+      saveCleanupOptionsToCookie();
     });
 
     row.appendChild(label);
@@ -308,7 +356,9 @@ document.getElementById("toggleCleanupOptionsButton").addEventListener("click", 
   autoResizeTextarea(textarea);
 });
 
+loadCleanupOptionsFromCookie();
 renderCleanupOptions();
+updateCleanupOptionsStatus();
 setCleanupOptionsVisible(false);
 if (!loadCustomReplacementsFromCookie()) {
   addReplacementRow("\\latex", "LaTeX");

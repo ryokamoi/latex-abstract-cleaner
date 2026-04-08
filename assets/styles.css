@@ -74,6 +74,33 @@ h1 {
   gap: 10px;
 }
 
+.controls-head {
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.control-change-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  min-height: 30px;
+  border-radius: 999px;
+  border: 1px solid #edc7bf;
+  background: #fff4f1;
+  color: #8f3b2e;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+
+.control-change-status.is-visible {
+  visibility: visible;
+  opacity: 1;
+}
+
 .helper {
   margin: 0 0 10px;
   color: #666054;
