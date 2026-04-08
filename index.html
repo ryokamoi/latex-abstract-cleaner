@@ -32,6 +32,14 @@
     </section>
 
     <section class="section">
+      <h2>Cleanup Options</h2>
+      <p class="helper">Enable or disable each step inside the cleanup pipeline.</p>
+      <div class="replacement-panel">
+        <div id="cleanupOptionsContainer" class="option-list"></div>
+      </div>
+    </section>
+
+    <section class="section">
       <div class="toolbar">
         <button class="btn btn-primary" id="cleanButton" type="button">Clean Up</button>
       </div>
@@ -39,10 +47,6 @@
 
     <section class="section">
       <h2>Output</h2>
-      <div class="toolbar output-toolbar">
-        <button class="btn btn-secondary" id="copyButton" type="button">Copy Output</button>
-        <span id="copyStatus" class="copy-status" aria-live="polite"></span>
-      </div>
       <textarea id="output"></textarea>
     </section>
   </main>

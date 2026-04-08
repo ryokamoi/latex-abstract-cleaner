@@ -64,8 +64,7 @@ input {
 }
 
 textarea {
-  resize: none;
-  overflow-y: hidden;
+  resize: vertical;
   min-height: 140px;
   line-height: 1.5;
 }
@@ -108,6 +107,30 @@ button:focus {
   align-items: center;
 }
 
+.option-list {
+  display: grid;
+  gap: 8px;
+}
+
+.option-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #d8d0be;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.option-row.is-disabled {
+  opacity: 0.65;
+}
+
+.option-label {
+  font-size: 0.95rem;
+}
+
 .btn {
   border: 1px solid transparent;
   border-radius: 10px;
@@ -133,6 +156,19 @@ button:focus {
   border-color: #d8cfbb;
 }
 
+.btn-toggle {
+  background: #e6f2ef;
+  color: #1f6a5f;
+  border-color: #bcd8d1;
+  min-width: 96px;
+}
+
+.option-row.is-disabled .btn-toggle {
+  background: #f0eeea;
+  color: #666054;
+  border-color: #d8d0be;
+}
+
 .btn-danger {
   background: #fff4f1;
   color: #8f3b2e;
@@ -149,25 +185,6 @@ button:focus {
   margin-bottom: 20px;
 }
 
-.output-toolbar {
-  margin-bottom: 8px;
-}
-
-.copy-status {
-  align-self: center;
-  color: #666054;
-  font-size: 0.9rem;
-  min-height: 1em;
-}
-
-.copy-status.is-success {
-  color: #1f6a5f;
-}
-
-.copy-status.is-error {
-  color: #8f3b2e;
-}
-
 @media (max-width: 720px) {
   .app {
     padding: 18px;
@@ -178,6 +195,10 @@ button:focus {
   }
 
   .replacement-row {
+    grid-template-columns: 1fr;
+  }
+
+  .option-row {
     grid-template-columns: 1fr;
   }
 

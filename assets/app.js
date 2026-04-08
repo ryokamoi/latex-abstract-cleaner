@@ -1,3 +1,52 @@
+const cleanupOptions = [
+  { key: "customRules", label: "Apply custom replacement rules", enabled: true },
+  { key: "emdash", label: "Replace --- with &mdash;", enabled: true },
+  { key: "comments", label: "Remove comments (% ...)", enabled: true },
+  { key: "latexCommands", label: "Remove LaTeX commands except \\url{}", enabled: true },
+  { key: "unwrapUrl", label: "Unwrap \\url{text} to text", enabled: true },
+  { key: "tildeSpace", label: "Replace ~ with space", enabled: true },
+  { key: "emptyBraces", label: "Remove {}", enabled: true },
+  { key: "lineBreaks", label: "Replace line breaks with space", enabled: true },
+  { key: "doubleSpaces", label: "Collapse multiple spaces", enabled: true },
+  { key: "trim", label: "Trim start/end spaces", enabled: true }
+];
+
+function isOptionEnabled(key) {
+  const option = cleanupOptions.find((item) => item.key === key);
+  return option ? option.enabled : false;
+}
+
+function renderCleanupOptions() {
+  const container = document.getElementById("cleanupOptionsContainer");
+  container.innerHTML = "";
+
+  cleanupOptions.forEach((option) => {
+    const row = document.createElement("div");
+    row.className = "option-row";
+    if (!option.enabled) {
+      row.classList.add("is-disabled");
+    }
+
+    const label = document.createElement("span");
+    label.className = "option-label";
+    label.textContent = option.label;
+
+    const toggleButton = document.createElement("button");
+    toggleButton.type = "button";
+    toggleButton.className = "btn btn-toggle";
+    toggleButton.textContent = option.enabled ? "Enabled" : "Disabled";
+    toggleButton.setAttribute("aria-pressed", option.enabled ? "true" : "false");
+    toggleButton.addEventListener("click", () => {
+      option.enabled = !option.enabled;
+      renderCleanupOptions();
+    });
+
+    row.appendChild(label);
+    row.appendChild(toggleButton);
+    container.appendChild(row);
+  });
+}
+
 function addReplacementRow(from = "", to = "") {
   const container = document.getElementById("replacementsContainer");
   const row = document.createElement("div");
@@ -49,82 +98,51 @@ function getReplacementRules() {
 
 function cleanUp() {
   let abstract = document.getElementById("input").value;
-  const outputEl = document.getElementById("output");
   const replaceList = getReplacementRules();
-  replaceList.push(["---", "&mdash;"]);
 
-  replaceList.forEach(([from, to]) => {
-    abstract = abstract.split(from).join(to);
-  });
-
-  abstract = abstract.replace(/%.*$/gm, "");
-  abstract = abstract.replace(/\\(?!url\b)\w+\{.*?\}/g, "");
-  abstract = abstract.replace(/\\url\{(.+?)\}/g, "$1");
-  abstract = abstract.replace(/~/g, " ");
-  abstract = abstract.replace(/\{\}/g, "");
-  abstract = abstract.replace(/\n/g, " ");
-  abstract = abstract.replace(/\s+/g, " ");
-
-  outputEl.value = abstract.trim();
-  autoResizeTextarea(outputEl);
-}
-
-function autoResizeTextarea(textarea) {
-  const minHeight = parseFloat(window.getComputedStyle(textarea).minHeight) || 0;
-  textarea.style.height = "auto";
-  textarea.style.height = `${Math.max(textarea.scrollHeight, minHeight)}px`;
-}
-
-let copyStatusTimeoutId;
-
-function setCopyStatus(message, kind) {
-  const copyStatusEl = document.getElementById("copyStatus");
-  copyStatusEl.textContent = message;
-  copyStatusEl.classList.remove("is-success", "is-error");
-  if (kind) {
-    copyStatusEl.classList.add(kind);
+  if (isOptionEnabled("customRules")) {
+    replaceList.forEach(([from, to]) => {
+      abstract = abstract.split(from).join(to);
+    });
   }
 
-  if (copyStatusTimeoutId) {
-    clearTimeout(copyStatusTimeoutId);
+  if (isOptionEnabled("emdash")) {
+    abstract = abstract.split("---").join("&mdash;");
   }
 
-  copyStatusTimeoutId = setTimeout(() => {
-    copyStatusEl.textContent = "";
-    copyStatusEl.classList.remove("is-success", "is-error");
-  }, 1800);
-}
-
-async function copyOutput() {
-  const outputEl = document.getElementById("output");
-  const text = outputEl.value;
-
-  if (!text.trim()) {
-    setCopyStatus("Output is empty.", "is-error");
-    return;
+  if (isOptionEnabled("comments")) {
+    abstract = abstract.replace(/%.*$/gm, "");
   }
 
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-      setCopyStatus("Copied.", "is-success");
-      return;
-    }
-
-    outputEl.focus();
-    outputEl.select();
-    const copied = document.execCommand("copy");
-    outputEl.setSelectionRange(outputEl.value.length, outputEl.value.length);
-
-    if (copied) {
-      setCopyStatus("Copied.", "is-success");
-      return;
-    }
-  } catch (error) {
-    // Fall through to final error message.
+  if (isOptionEnabled("latexCommands")) {
+    abstract = abstract.replace(/\\(?!url\b)\w+\{.*?\}/g, "");
   }
 
-  setCopyStatus("Copy failed.", "is-error");
+  if (isOptionEnabled("unwrapUrl")) {
+    abstract = abstract.replace(/\\url\{(.+?)\}/g, "$1");
+  }
+
+  if (isOptionEnabled("tildeSpace")) {
+    abstract = abstract.replace(/~/g, " ");
+  }
+
+  if (isOptionEnabled("emptyBraces")) {
+    abstract = abstract.replace(/\{\}/g, "");
+  }
+
+  if (isOptionEnabled("lineBreaks")) {
+    abstract = abstract.replace(/\n/g, " ");
+  }
+
+  if (isOptionEnabled("doubleSpaces")) {
+    abstract = abstract.replace(/\s+/g, " ");
+  }
+
+  if (isOptionEnabled("trim")) {
+    abstract = abstract.trim();
+  }
+
+  document.getElementById("output").value = abstract;
 }
 
 document.getElementById("addRuleButton").addEventListener("click", () => {
@@ -135,16 +153,7 @@ document.getElementById("cleanButton").addEventListener("click", () => {
   cleanUp();
 });
 
-document.getElementById("copyButton").addEventListener("click", () => {
-  copyOutput();
-});
-
-["input", "output"].forEach((id) => {
-  const textarea = document.getElementById(id);
-  textarea.addEventListener("input", () => autoResizeTextarea(textarea));
-  autoResizeTextarea(textarea);
-});
-
+renderCleanupOptions();
 addReplacementRow("\\alpha", "alpha");
 addReplacementRow("\\beta", "beta");
 addReplacementRow("\\gamma", "gamma");
