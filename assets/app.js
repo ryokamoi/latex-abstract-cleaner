@@ -241,6 +241,4 @@ document.getElementById("toggleCleanupOptionsButton").addEventListener("click", 
 
 renderCleanupOptions();
 setCleanupOptionsVisible(false);
-addReplacementRow("\\alpha", "alpha");
-addReplacementRow("\\beta", "beta");
-addReplacementRow("\\gamma", "gamma");
+addReplacementRow("\\latex", "LaTeX");

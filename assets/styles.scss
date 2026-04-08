@@ -58,6 +58,26 @@ h1 {
   }
 }
 
+.work-box {
+  border: 1px solid $line;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.input-work-box {
+  background: linear-gradient(180deg, #fff8ea 0%, #fffdf7 100%);
+}
+
+.output-work-box {
+  background: linear-gradient(180deg, #f4f9f7 0%, #fdfefe 100%);
+  border-color: #c9d9d4;
+}
+
+.work-box .section:last-child {
+  margin-bottom: 0;
+}
+
 .section-head {
   display: flex;
   flex-wrap: wrap;
@@ -215,6 +235,29 @@ button:focus {
   gap: 10px;
   margin-top: 4px;
   margin-bottom: 20px;
+}
+
+.clean-toolbar {
+  justify-content: center;
+  margin: 0;
+}
+
+.clean-action-bridge {
+  margin: 4px 0 20px;
+}
+
+.clean-action-bridge .clean-toolbar {
+  margin-bottom: 0;
+}
+
+.clean-cta {
+  width: min(100%, 560px);
+  justify-content: center;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 14px 18px;
+  letter-spacing: 0.01em;
+  box-shadow: 0 10px 24px rgba(31, 106, 95, 0.34);
 }
 
 .is-hidden {

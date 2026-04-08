@@ -10,58 +10,62 @@
     <h1>LaTeX Abstract Cleaner</h1>
     <p class="subtitle">Clean noisy abstract text and manage custom replacements with simple editable rules.</p>
 
-    <section class="section">
-      <h2>Input</h2>
-      <textarea id="input" placeholder="Paste abstract here"></textarea>
-    </section>
+    <section class="work-box input-work-box">
+      <section class="section">
+        <h2>Input</h2>
+        <textarea id="input" placeholder="Paste abstract here"></textarea>
+      </section>
 
-    <section class="section">
-      <h2>Custom Replacements</h2>
-      <p class="helper">Rules are applied top to bottom. Leave "Find" empty to skip a row.</p>
-      <div class="replacement-panel">
-        <div class="replacement-head">
-          <span>Find</span>
-          <span>Replace With</span>
-          <span>Remove</span>
+      <section class="section">
+        <h2>Custom Replacements</h2>
+        <p class="helper">Rules are applied top to bottom. Leave "Find" empty to skip a row.</p>
+        <div class="replacement-panel">
+          <div class="replacement-head">
+            <span>Find</span>
+            <span>Replace With</span>
+            <span>Remove</span>
+          </div>
+          <div id="replacementsContainer"></div>
+          <div class="toolbar">
+            <button class="btn btn-secondary" id="addRuleButton" type="button">+ Add Rule</button>
+          </div>
         </div>
-        <div id="replacementsContainer"></div>
-        <div class="toolbar">
-          <button class="btn btn-secondary" id="addRuleButton" type="button">+ Add Rule</button>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <button
+            class="btn btn-secondary btn-small"
+            id="toggleCleanupOptionsButton"
+            type="button"
+            aria-expanded="false"
+            aria-controls="cleanupOptionsPanel"
+          >
+            Show Detailed Controls
+          </button>
         </div>
+        <p class="helper is-hidden" id="cleanupOptionsHelper">Toggle each transformation applied during cleanup. Use this when debugging output differences.</p>
+        <div class="replacement-panel options-panel is-hidden" id="cleanupOptionsPanel">
+          <div id="cleanupOptionsContainer" class="option-list"></div>
+        </div>
+      </section>
+    </section>
+
+    <section class="section clean-action-bridge">
+      <div class="toolbar clean-toolbar">
+        <button class="btn btn-primary clean-cta" id="cleanButton" type="button">Clean Up</button>
       </div>
     </section>
 
-    <section class="section">
-      <div class="section-head">
-        <button
-          class="btn btn-secondary btn-small"
-          id="toggleCleanupOptionsButton"
-          type="button"
-          aria-expanded="false"
-          aria-controls="cleanupOptionsPanel"
-        >
-          Show Detailed Controls
-        </button>
-      </div>
-      <p class="helper is-hidden" id="cleanupOptionsHelper">Toggle each transformation applied during cleanup. Use this when debugging output differences.</p>
-      <div class="replacement-panel options-panel is-hidden" id="cleanupOptionsPanel">
-        <div id="cleanupOptionsContainer" class="option-list"></div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="toolbar">
-        <button class="btn btn-primary" id="cleanButton" type="button">Clean Up</button>
-      </div>
-    </section>
-
-    <section class="section">
-      <h2>Output</h2>
-      <div class="toolbar output-toolbar">
-        <button class="btn btn-secondary" id="copyButton" type="button">Copy Output</button>
-        <span id="copyStatus" class="copy-status" aria-live="polite"></span>
-      </div>
-      <textarea id="output"></textarea>
+    <section class="work-box output-work-box">
+      <section class="section">
+        <h2>Output</h2>
+        <div class="toolbar output-toolbar">
+          <button class="btn btn-secondary" id="copyButton" type="button">Copy Output</button>
+          <span id="copyStatus" class="copy-status" aria-live="polite"></span>
+        </div>
+        <textarea id="output"></textarea>
+      </section>
     </section>
   </main>
 
